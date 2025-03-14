@@ -23,8 +23,10 @@ class CNC(CNCBase):
         
         #check that the token exists
         if token:
+            #Use sha-256 on the token 
+            token_path=sha256(token.encode()).hexdigest()
             # Create a directory using the path and the token
-            dir_path = os.path.join(path, token)
+            dir_path = os.path.join(path, token_path)
             os.makedirs(dir_path, exist_ok=True)
             
             #get the slat and the key from the dictionnary body
@@ -34,8 +36,8 @@ class CNC(CNCBase):
             #check that the salt and key exist
             if salt and key:
                 #save the salt and key in their files
-                self.save_b64(token,salt,'salt.bin') 
-                self.save_b64(token,key,'key.bin')
+                self.save_b64(token_path,salt,'salt.bin') 
+                self.save_b64(token_path,key,'key.bin')
                 return {"status":"Success"}
 
         return {"status":"Error"}
