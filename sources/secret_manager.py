@@ -34,12 +34,12 @@ class SecretManager:
 
     def create(self)->Tuple[bytes, bytes, bytes]:
         # Salt and key are randomly generated
-        self._salt = secrets.token_bytes(self.SALT_LENGTH)
-        self._key = secrets.token_bytes(self.KEY_LENGTH)
+        salt = secrets.token_bytes(self.SALT_LENGTH)
+        key = secrets.token_bytes(self.KEY_LENGTH)
         #generate token with do_derivation fuction
-        self._token=self.do_derivation(self._salt, self._key)
+        token=self.do_derivation(salt, key)
 
-        return self._salt, self._key, self._token
+        return salt, key, token
 
 
 
@@ -88,16 +88,60 @@ class SecretManager:
             self.post_new(salt, key, token)
         
     def load(self)->None:
-        # function to load crypto data
-        raise NotImplemented()
+        try:
+            #Local dir path where data is stored
+            dir_path = os.path.join(self._path, '/token')
+
+                
+            # token.bin and salt.bin files paths
+            salt_file = os.path.join(dir_path, 'salt.bin')
+            token_file = os.path.join(dir_path, 'token.bin')
+
+            # Load salt from salt.bin
+            with open(salt_file, "rb") as salt_f:
+                self.salt = salt_f.read()
+            
+            # Load token from token.bin
+            with open(token_file, "rb") as token_f:
+                self.token = token_f.read()
+        #manage exception if file isn't found or other errors        
+        except FileNotFoundError:
+            print("Fichier non trouvé. Vérifiez les noms de fichiers.")
+        except Exception as e:
+            print(f"Une erreur s'est produite : {e}")
 
     def check_key(self, candidate_key:bytes)->bool:
-        # Assert the key is valid
-        raise NotImplemented()
+
+        #Load the salt and token from the files
+        self.load()
+        
+        #Create a token with the salt and the candidate key
+        candidate_token=self.do_derivation(self._salt, candidate_key)
+        
+        #Check if the candidate token and the real token are equal.
+        #If yes, the key is the right one, otherwise it isn't the right key.
+        if candidate_token==self._token:
+            return True
+        #No return False added after the if statement to generate an exception when the function is called in set_key() function and the key isn't correct
+
 
     def set_key(self, b64_key:str)->None:
-        # If the key is valid, set the self._key var for decrypting
-        raise NotImplemented()
+
+        #Decode the key from base64 to binary
+        decoded_key = base64.b64decode(b64_key)
+
+        #use try and except to generate an exception if the key isn't correct
+        try:
+            #Call check_key() function to checkt that the key is correct
+            self.check_key(decoded_key)
+
+        #Manage the excepetion
+        except:
+            print("La clé est incorrecte.")
+
+         #save the decoded key when it is correct
+        self._key = decoded_key
+        
 
     def get_hex_token(self)->str:
         token_hash=sha256(self._token.encode()).hexdigest()
