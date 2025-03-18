@@ -88,27 +88,29 @@ class SecretManager:
             self.post_new(salt, key, token)
         
     def load(self)->None:
-        try:
-            #Local dir path where data is stored
-            dir_path = os.path.join(self._path, '/token')
+        
+        #Local dir path where data is stored
+        dir_path = os.path.join(self._path, '/token')
 
                 
-            # token.bin and salt.bin files paths
-            salt_file = os.path.join(dir_path, 'salt.bin')
-            token_file = os.path.join(dir_path, 'token.bin')
+        # token.bin and salt.bin files paths
+        salt_file = os.path.join(dir_path, 'salt.bin')
+        token_file = os.path.join(dir_path, 'token.bin')
+
+        #Check that salt.bin exists
+        if os.path.exists(salt_file):
 
             # Load salt from salt.bin
             with open(salt_file, "rb") as salt_f:
                 self.salt = salt_f.read()
-            
+                
+        #Check that token.bin exists  
+        if os.path.exists(salt_file): 
+        
             # Load token from token.bin
             with open(token_file, "rb") as token_f:
                 self.token = token_f.read()
-        #manage exception if file isn't found or other errors        
-        except FileNotFoundError:
-            print("Fichier non trouvé. Vérifiez les noms de fichiers.")
-        except Exception as e:
-            print(f"Une erreur s'est produite : {e}")
+        
 
     def check_key(self, candidate_key:bytes)->bool:
 
@@ -157,5 +159,27 @@ class SecretManager:
         raise NotImplemented()
 
     def clean(self):
-        # remove crypto data from the target
-        raise NotImplemented()
+
+        #Local dir path where data is stored
+        dir_path = os.path.join(self._path, '/token')
+
+        # token.bin and salt.bin files paths
+        salt_file = os.path.join(dir_path, "salt.bin")
+        token_file = os.path.join(dir_path, "token.bin")
+
+        #Delete salt.bin if it exists
+        if os.path.exists(salt_file):
+            os.remove(salt_file)
+        
+        #Delete token.bin if it exists
+        if os.path.exists(token_file):
+            os.remove(token_file)
+        
+        #Delete the /token directory if it exists
+        if os.path.exists(dir_path):
+            os.remove(dir_path)
+
+        #Remove salt, token and key from memory
+        self._salt = None
+        self._token = None
+        self._key = None
