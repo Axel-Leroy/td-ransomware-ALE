@@ -129,17 +129,10 @@ class SecretManager:
         #Decode the key from base64 to binary
         decoded_key = base64.b64decode(b64_key)
 
-        #use try and except to generate an exception if the key isn't correct
-        try:
-            #Call check_key() function to checkt that the key is correct
-            self.check_key(decoded_key)
-
-        #Manage the excepetion
-        except:
-            print("La clé est incorrecte.")
-
-         #save the decoded key when it is correct
-        self._key = decoded_key
+        #Call check_key() function to checkt that the key is correct
+        if self.check_key(decoded_key):
+            #save the decoded key when it is correct
+            self._key = decoded_key
         
 
     def get_hex_token(self)->str:

