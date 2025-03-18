@@ -113,9 +113,6 @@ class SecretManager:
         
 
     def check_key(self, candidate_key:bytes)->bool:
-
-        #Load the salt and token from the files
-        self.load()
         
         #Create a token with the salt and the candidate key
         candidate_token=self.do_derivation(self._salt, candidate_key)
@@ -177,7 +174,7 @@ class SecretManager:
         
         #Delete the /token directory if it exists
         if os.path.exists(dir_path):
-            os.remove(dir_path)
+            os.removedirs(dir_path)
 
         #Remove salt, token and key from memory
         self._salt = None
